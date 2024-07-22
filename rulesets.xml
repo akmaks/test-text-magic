@@ -15,4 +15,8 @@
     <rule ref="rulesets/controversial.xml" />
     <rule ref="rulesets/design.xml" />
     <rule ref="rulesets/unusedcode.xml" />
+
+    <!-- disable checking -->
+    <exclude-pattern>migrations</exclude-pattern>
+
 </ruleset>

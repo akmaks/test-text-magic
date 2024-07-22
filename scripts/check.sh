@@ -18,7 +18,7 @@ then
         exit 1
     fi
 
-    echo "[PRE-COMMIT] Checking modified files with phpstan..."
+    echo "[PRE-COMMIT] Checking files with phpstan..."
 
     $PHPSTAN $ALL_FILES
 
@@ -30,7 +30,7 @@ then
 
         echo "[PRE-COMMIT] Checking code smells with phpmd..."
 
-        printf -v command '%s %s' $ALL_FILES " text rulesets.xml"
+        printf -v command '%s %s ' $ALL_FILES " text rulesets.xml"
 
         $PHPMD $command
 
