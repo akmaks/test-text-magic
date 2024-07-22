@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TestSuiteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
@@ -19,12 +21,46 @@ class TestSuite
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int,TestCase>
+     */
+    #[ORM\OneToMany(targetEntity: TestCase::class, mappedBy: 'testSuite')]
+    private Collection $testCases;
+
+    /**
+     * @var \Doctrine\Common\Collections\Collection<int,Session>
+     */
+    #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'testSuite')]
+    private Collection $sessions;
+
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
+    public function __construct()
+    {
+        $this->testCases = new ArrayCollection();
+        $this->sessions = new ArrayCollection();
+    }
 
     public function getId(): ?Ulid
     {
         return $this->id;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection<int,TestCase>
+     */
+    public function getTestCases(): Collection
+    {
+        return $this->testCases;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection<int,Session>
+     */
+    public function getSessions(): Collection
+    {
+        return $this->sessions;
     }
 
     public function getName(): ?string

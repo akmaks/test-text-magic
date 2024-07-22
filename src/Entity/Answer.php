@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use App\Repository\AnswerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-class User
+#[ORM\Entity(repositoryClass: AnswerRepository::class)]
+class Answer
 {
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME, unique: true)]
@@ -19,21 +19,21 @@ class User
     #[ORM\CustomIdGenerator(class: 'doctrine.ulid_generator')]
     private ?Ulid $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $text = null;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int,Session>
+     * @var \Doctrine\Common\Collections\Collection<int,Result>
      */
-    #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'user')]
-    private Collection $sessions;
+    #[ORM\OneToMany(targetEntity: Result::class, mappedBy: 'answer')]
+    private Collection $results;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()
     {
-        $this->sessions = new ArrayCollection();
+        $this->results = new ArrayCollection();
     }
 
     public function getId(): ?Ulid
@@ -41,22 +41,22 @@ class User
         return $this->id;
     }
 
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
     /**
-     * @return \Doctrine\Common\Collections\Collection<int,Session>
+     * @return \Doctrine\Common\Collections\Collection<int,Result>
      */
-    public function getSessions(): Collection
+    public function getResults(): Collection
     {
-        return $this->sessions;
+        return $this->results;
     }
 
-    public function getName(): ?string
+    public function setText(string $text): static
     {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
+        $this->text = $text;
 
         return $this;
     }
