@@ -15,6 +15,7 @@
         "symfony/yaml": "7.0.*"
     },
     "require-dev": {
+        "phpmd/phpmd": "^2.15",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "*",
