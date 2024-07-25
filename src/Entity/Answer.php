@@ -22,6 +22,12 @@ class Answer
     #[ORM\Column(type: Types::TEXT)]
     private ?string $text = null;
 
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private ?bool $isRight = null;
+
+    #[ORM\ManyToOne(targetEntity: TestCase::class, inversedBy: 'answers')]
+    private TestCase $testCase;
+
     /**
      * @var \Doctrine\Common\Collections\Collection<int,Result>
      */
@@ -44,6 +50,30 @@ class Answer
     public function getText(): ?string
     {
         return $this->text;
+    }
+
+    public function isRight(): ?bool
+    {
+        return $this->isRight;
+    }
+
+    public function setIsRight(bool $isRight): static
+    {
+        $this->isRight = $isRight;
+
+        return $this;
+    }
+
+    public function getTestCase(): ?TestCase
+    {
+        return $this->testCase;
+    }
+
+    public function setTestCase(TestCase $testCase): static
+    {
+        $this->testCase = $testCase;
+
+        return $this;
     }
 
     /**

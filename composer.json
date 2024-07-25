@@ -20,6 +20,7 @@
         "symfony/yaml": "7.0.*"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
         "phpmd/phpmd": "^2.15",
         "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^9.5",

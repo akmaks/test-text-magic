@@ -31,11 +31,9 @@ class TestCase
     /**
      * @var \Doctrine\Common\Collections\Collection<int,Answer>
      */
-    #[ORM\JoinTable(name: 'test_cases_answers')]
-    #[ORM\JoinColumn(name: 'test_case_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'answer_id', referencedColumnName: 'id')]
-    #[ORM\ManyToMany(targetEntity: Answer::class)]
+    #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'testCase')]
     private Collection $answers;
+
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $question = null;
@@ -60,6 +58,17 @@ class TestCase
     public function getAnswers(): Collection
     {
         return $this->answers;
+    }
+
+    /**
+     * @param \Doctrine\Common\Collections\Collection<int,Answer> $answers
+     * @return $this
+     */
+    public function setAnswers(Collection $answers): static
+    {
+        $this->answers = $answers;
+
+        return $this;
     }
 
     /**

@@ -56,6 +56,17 @@ class TestSuite
     }
 
     /**
+     * @param \Doctrine\Common\Collections\Collection<int,TestCase> $testCases
+     * @return $this
+     */
+    public function setTestCases(Collection $testCases): static
+    {
+        $this->testCases = $testCases;
+
+        return $this;
+    }
+
+    /**
      * @return \Doctrine\Common\Collections\Collection<int,Session>
      */
     public function getSessions(): Collection
