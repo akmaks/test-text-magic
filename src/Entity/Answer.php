@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Result\Result;
 use App\Repository\AnswerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -101,5 +102,10 @@ class Answer
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string)$this->text;
     }
 }

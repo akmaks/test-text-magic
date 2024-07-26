@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Result\Result;
+use App\Entity\TestSuite\TestSuite;
 use App\Repository\TestCaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

@@ -4,7 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Answer;
 use App\Entity\TestCase;
-use App\Entity\TestSuite;
+use App\Entity\TestSuite\TestSuite;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Collections\ArrayCollection;

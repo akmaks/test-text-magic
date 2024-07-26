@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\User;
 
-use App\Repository\TestSuiteRepository;
+use App\Entity\Session\Session;
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid;
 
-#[ORM\Entity(repositoryClass: TestSuiteRepository::class)]
-class TestSuite
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
+class User
 {
     #[ORM\Id]
     #[ORM\Column(type: UlidType::NAME, unique: true)]
@@ -22,15 +24,9 @@ class TestSuite
     private ?string $name = null;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int,TestCase>
-     */
-    #[ORM\OneToMany(targetEntity: TestCase::class, mappedBy: 'testSuite')]
-    private Collection $testCases;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection<int,Session>
      */
-    #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'testSuite')]
+    #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'user')]
     private Collection $sessions;
 
     #[ORM\Column]
@@ -38,32 +34,12 @@ class TestSuite
 
     public function __construct()
     {
-        $this->testCases = new ArrayCollection();
         $this->sessions = new ArrayCollection();
     }
 
     public function getId(): ?Ulid
     {
         return $this->id;
-    }
-
-    /**
-     * @return \Doctrine\Common\Collections\Collection<int,TestCase>
-     */
-    public function getTestCases(): Collection
-    {
-        return $this->testCases;
-    }
-
-    /**
-     * @param \Doctrine\Common\Collections\Collection<int,TestCase> $testCases
-     * @return $this
-     */
-    public function setTestCases(Collection $testCases): static
-    {
-        $this->testCases = $testCases;
-
-        return $this;
     }
 
     /**

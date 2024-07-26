@@ -22,3 +22,26 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\TestSuite\TestSuiteServiceInterface:
+        class: App\Service\TestSuite\TestSuiteService
+
+    App\Entity\TestSuite\TestSuiteRepositoryInterface:
+        class: App\Repository\TestSuiteRepository
+
+    App\Service\User\UserServiceInterface:
+        class: App\Service\User\UserService
+
+    App\Entity\User\UserRepositoryInterface:
+        class: App\Repository\UserRepository
+
+    App\Service\Session\SessionServiceInterface:
+        class: App\Service\Session\SessionService
+
+    App\Entity\Session\SessionRepositoryInterface:
+        class: App\Repository\SessionRepository
+
+    App\Service\Result\ResultServiceInterface:
+        class: App\Service\Result\ResultService
+
+    App\Entity\Result\ResultRepositoryInterface:
+        class: App\Repository\ResultRepository

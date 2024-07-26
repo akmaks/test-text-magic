@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Result;
 
+use App\Entity\Answer;
+use App\Entity\Session\Session;
+use App\Entity\TestCase;
 use App\Repository\ResultRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;

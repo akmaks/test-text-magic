@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Session;
 
+use App\Entity\Result\Result;
+use App\Entity\TestSuite\TestSuite;
+use App\Entity\User\User;
 use App\Repository\SessionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
