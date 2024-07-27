@@ -135,7 +135,10 @@ class TestCommand extends Command
         $successResults = [];
         $failedResults = [];
 
-        foreach ($testSuite->getTestCases() as $key => $testCase) {
+        $testCases = $testSuite->getTestCases()->toArray();
+        shuffle($testCases);
+
+        foreach ($testCases as $key => $testCase) {
             $isSuccess = true;
 
             $answers = $testCase->getAnswers()->toArray();

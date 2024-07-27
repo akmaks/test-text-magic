@@ -1,4 +1,3 @@
-SHELL = /bin/bash
 DOCKER_EXEC = docker compose exec app
 
 help: ## Show this help
@@ -29,7 +28,7 @@ check: ## Run all checkers
 	chmod +x ./scripts/check.sh
 	$(DOCKER_EXEC) scripts/check.sh
 
-tests: ## Run tests
+test: ## Run tests
 	$(DOCKER_EXEC) vendor/bin/phpunit
 
 add-check-githook: ## Add code checker in githook pre-commit (local php is required)
