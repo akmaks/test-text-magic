@@ -29,7 +29,10 @@ check: ## Run all checkers
 	chmod +x ./scripts/check.sh
 	$(DOCKER_EXEC) scripts/check.sh
 
-add-githooks: ## Add code checker in githook pre-commit (local php is required)
+tests: ## Run tests
+	$(DOCKER_EXEC) vendor/bin/phpunit
+
+add-check-githook: ## Add code checker in githook pre-commit (local php is required)
 	chmod +x ./scripts/check.sh
 	chmod +x ./.githooks/pre-commit
 	git config core.hooksPath .githooks
