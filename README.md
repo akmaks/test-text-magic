@@ -10,6 +10,8 @@ src
 └── UI            # UI layer (console, web, api,...)
     ├── Console
     └── Web
+    
+Dependency layer rule: UI<-{UseCase}<-Service<-Repository<-{External clients (db, api, OS)}
 ```
 
 ## Getting started
