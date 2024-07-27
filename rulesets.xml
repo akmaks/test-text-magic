@@ -36,5 +36,6 @@
 
     <!-- disable checking -->
     <exclude-pattern>migrations</exclude-pattern>
+    <exclude-pattern>tests</exclude-pattern>
 
 </ruleset>

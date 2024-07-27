@@ -48,3 +48,6 @@ services:
 
     App\Service\Answer\AnswerServiceInterface:
         class: App\Service\Answer\AnswerService
+
+    Symfony\Component\Console\Helper\QuestionHelper:
+        class: Symfony\Component\Console\Helper\QuestionHelper

@@ -5,6 +5,7 @@ namespace App\UI\Console\Test;
 use App\Entity\Answer\Answer;
 use App\Entity\TestCase\TestCase;
 use App\Entity\TestSuite\TestSuite;
+use App\Entity\User\User;
 use App\Service\Answer\AnswerServiceInterface;
 use App\Service\Result\ResultServiceInterface;
 use App\Service\Session\SessionServiceInterface;
@@ -12,6 +13,7 @@ use App\Service\TestSuite\TestSuiteServiceInterface;
 use App\Service\User\UserServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,31 +33,62 @@ class TestCommand extends Command
         private readonly SessionServiceInterface $sessionService,
         private readonly ResultServiceInterface $resultService,
         private readonly AnswerServiceInterface $answerService,
+        private readonly QuestionHelper $helper,
     ) {
         parent::__construct();
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /**
-         * @var QuestionHelper $helper
-         */
-        $helper = $this->getHelper('question');
-
         $question = new ConfirmationQuestion(
             "Hello! Do you wanna play a game? [y]\n",
             true,
             '/y/'
         );
 
-        if (!$helper->ask($input, $output, $question)) {
+        if (!$this->helper->ask($input, $output, $question)) {
+            $output->writeln("Goodbye");
+
             return Command::SUCCESS;
         }
 
+        $user = $this->registerName($input, $output);
+
+        while (true) {
+            $this->runTest($user, $input, $output);
+
+            $question = new ConfirmationQuestion(
+                "\nDo you wanna play again? [y]\n",
+                true,
+                '/y/'
+            );
+
+            if (!$this->helper->ask($input, $output, $question)) {
+                $output->writeln(sprintf("Goodbye, %s", $user->getName()));
+
+                return Command::SUCCESS;
+            }
+        }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return User
+     */
+    protected function registerName(InputInterface $input, OutputInterface $output): User
+    {
         while (true) {
             $question = new Question("What is your name? Only latin letters, please [user]\n", 'user');
 
-            $name = $helper->ask($input, $output, $question);
+            $name = $this->helper->ask($input, $output, $question);
 
             if (!$this->isValidName($name)) {
                 $output->writeln("Very bad, try more");
@@ -67,6 +100,16 @@ class TestCommand extends Command
             break;
         }
 
+        return $user;
+    }
+
+    /**
+     * @param User $user
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    protected function runTest(User $user, InputInterface $input, OutputInterface $output): void
+    {
         $output->writeln(sprintf('Well, %s, let\'s start the game', $user->getName()));
 
         $question = new ChoiceQuestion(
@@ -75,11 +118,10 @@ class TestCommand extends Command
             0
         );
 
-        $testSuite = $helper->ask($input, $output, $question);
-
-        if (!$testSuite instanceof TestSuite) {
-            return Command::SUCCESS;
-        }
+        /**
+         * @var TestSuite $testSuite
+         */
+        $testSuite = $this->helper->ask($input, $output, $question);
 
         $output->writeln(
             sprintf(
@@ -105,7 +147,7 @@ class TestCommand extends Command
             );
             $question->setMultiselect(true);
 
-            $selectedAnswers = $helper->ask($input, $output, $question);
+            $selectedAnswers = $this->helper->ask($input, $output, $question);
 
             foreach ($selectedAnswers as $answer) {
                 if ($answer instanceof Answer) {
@@ -137,10 +179,13 @@ class TestCommand extends Command
         foreach ($failedResults as $failedResult) {
             $this->printResultList($output, $failedResult[0], $failedResult[1], $failedResult[2]);
         }
-
-        return Command::SUCCESS;
     }
 
+    /**
+     * @param string|null $name
+     *
+     * @return bool
+     */
     protected function isValidName(?string $name): bool
     {
         if ($name === null) {
@@ -152,6 +197,7 @@ class TestCommand extends Command
 
     /**
      * @param array<array<int>> $answerCombinations
+     *
      * @return string
      */
     protected function getAnswersAsString(array $answerCombinations): string
@@ -172,10 +218,11 @@ class TestCommand extends Command
     }
 
     /**
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param \App\Entity\TestCase\TestCase $testCase
+     * @param OutputInterface $output
+     * @param TestCase $testCase
      * @param array<Answer> $selectedAnswers
      * @param array<Answer> $allAnswers
+     *
      * @return void
      */
     protected function printResultList(
