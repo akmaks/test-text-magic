@@ -1,6 +1,5 @@
 SHELL = /bin/bash
-PHP_BIN = php
-DC_RUN_ARGS = --rm --user "$(shell id -u):$(shell id -g)"
+DOCKER_EXEC = docker compose exec app
 
 help: ## Show this help
 	@printf "\033[33m%s:\033[0m\n" 'Available commands'
@@ -9,27 +8,28 @@ help: ## Show this help
 setup: ## Setup app
 	docker compose stop
 	yes | docker compose rm -v
-	docker compose up -d
-	sleep 5
-	yes | bin/console doctrine:migrations:migrate
-	yes | bin/console doctrine:fixtures:load
+	docker compose up -d --build
 
 run: ## Run test
-	bin/console app:test
+	$(DOCKER_EXEC) bin/console app:test
 
 phpstan: ## Code errors and bugs analyser
-	vendor/bin/phpstan analyse
+	$(DOCKER_EXEC) vendor/bin/phpstan analyse
 
 phpcs: ## Code style analyzer
-	./vendor/bin/phpcs
+	$(DOCKER_EXEC) vendor/bin/phpcs
 
 phpcbf: ## Code style fixer
-	./vendor/bin/phpcbf
+	$(DOCKER_EXEC) vendor/bin/phpcbf
 
 phpmd: ## Code smells detector
-	./vendor/bin/phpmd ./src text rulesets.xml
+	$(DOCKER_EXEC) vendor/bin/phpmd ./src text rulesets.xml
 
-add-githooks: ## Add code checker in githook pre-commit
+check: ## Run all checkers
+	chmod +x ./scripts/check.sh
+	$(DOCKER_EXEC) scripts/check.sh
+
+add-githooks: ## Add code checker in githook pre-commit (local php is required)
 	chmod +x ./scripts/check.sh
 	chmod +x ./.githooks/pre-commit
 	git config core.hooksPath .githooks

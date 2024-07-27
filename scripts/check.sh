@@ -30,7 +30,7 @@ then
 
         echo "[PRE-COMMIT] Checking code smells with phpmd..."
 
-        printf -v command '%s %s ' $ALL_FILES " text rulesets.xml"
+        command=$(printf '%s %s ' $ALL_FILES " text rulesets.xml")
 
         $PHPMD $command
 
