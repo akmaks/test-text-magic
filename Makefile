@@ -6,11 +6,16 @@ help: ## Show this help
 	@printf "\033[33m%s:\033[0m\n" 'Available commands'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[32m%-18s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-up: ## Start app
+setup: ## Setup app
+	docker compose stop
+	yes | docker compose rm -v
+	docker compose up -d
+	sleep 5
+	yes | bin/console doctrine:migrations:migrate
 	yes | bin/console doctrine:fixtures:load
-	@printf "\n   \e[30;42m %s \033[0m\n\n" 'Navigate your browser to ⇒ http://127.0.0.1:8000'
-	APP_UID=$(shell id -u) APP_GID=$(shell id -g) docker-compose up --build --detach --remove-orphans; \
-    $(PHP_BIN) -S localhost:8000 -t public;
+
+run: ## Run test
+	bin/console app:test
 
 phpstan: ## Code errors and bugs analyser
 	vendor/bin/phpstan analyse

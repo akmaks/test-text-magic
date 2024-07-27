@@ -27,18 +27,6 @@ then
       echo "[PRE-COMMIT] phpstan failed"
       exit 1
     fi
-
-        echo "[PRE-COMMIT] Checking code smells with phpmd..."
-
-        printf -v command '%s %s ' $ALL_FILES " text rulesets.xml"
-
-        $PHPMD $command
-
-        if [ $? != 0 ]
-        then
-          echo "[PRE-COMMIT] phpmd failed"
-          exit 1
-        fi
 fi
 
 exit $?

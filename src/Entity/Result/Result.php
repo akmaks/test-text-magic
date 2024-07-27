@@ -2,9 +2,8 @@
 
 namespace App\Entity\Result;
 
-use App\Entity\Answer;
+use App\Entity\Answer\Answer;
 use App\Entity\Session\Session;
-use App\Entity\TestCase;
 use App\Repository\ResultRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
@@ -22,10 +21,7 @@ class Result
     #[ORM\ManyToOne(targetEntity: Session::class, inversedBy: 'results')]
     private Session $session;
 
-    #[ORM\ManyToOne(targetEntity: TestCase::class, inversedBy: 'results')]
-    private TestCase $testCase;
-
-    #[ORM\ManyToOne(targetEntity: TestCase::class, inversedBy: 'answer')]
+    #[ORM\ManyToOne(targetEntity: Answer::class, inversedBy: 'answer')]
     private Answer $answer;
 
     #[ORM\Column]
@@ -44,18 +40,6 @@ class Result
     public function setSession(Session $session): static
     {
         $this->session = $session;
-
-        return $this;
-    }
-
-    public function getTestCase(): TestCase
-    {
-        return $this->testCase;
-    }
-
-    public function setTestCase(TestCase $testCase): static
-    {
-        $this->testCase = $testCase;
 
         return $this;
     }

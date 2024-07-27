@@ -9,7 +9,7 @@ interface TestSuiteRepositoryInterface
     public function findOneByName(string $name): ?TestSuite;
 
     /**
-     * @return array<int, TestSuite>
+     * @return array<TestSuite>
      */
     public function getList(): array;
 }

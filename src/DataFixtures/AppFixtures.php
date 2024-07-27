@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Answer;
-use App\Entity\TestCase;
+use App\Entity\Answer\Answer;
+use App\Entity\TestCase\TestCase;
 use App\Entity\TestSuite\TestSuite;
 use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -182,7 +182,7 @@ class AppFixtures extends Fixture
 
     /**
      * @param \Doctrine\Persistence\ObjectManager $manager
-     * @param \App\Entity\TestCase $testCase
+     * @param \App\Entity\TestCase\TestCase $testCase
      * @param array<array<string,mixed>> $answers
      * @return \Doctrine\Common\Collections\ArrayCollection<int,Answer>
      */

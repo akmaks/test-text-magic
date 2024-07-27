@@ -2,8 +2,10 @@
 
 namespace App\Command;
 
-use App\Entity\Answer;
+use App\Entity\Answer\Answer;
+use App\Entity\TestCase\TestCase;
 use App\Entity\TestSuite\TestSuite;
+use App\Service\Answer\AnswerServiceInterface;
 use App\Service\Result\ResultServiceInterface;
 use App\Service\Session\SessionServiceInterface;
 use App\Service\TestSuite\TestSuiteServiceInterface;
@@ -27,6 +29,7 @@ class TestCommand extends Command
         private readonly TestSuiteServiceInterface $testSuiteService,
         private readonly SessionServiceInterface $sessionService,
         private readonly ResultServiceInterface $resultService,
+        private readonly AnswerServiceInterface $answerService,
     ) {
         parent::__construct();
     }
@@ -39,9 +42,9 @@ class TestCommand extends Command
         $helper = $this->getHelper('question');
 
         $question = new ConfirmationQuestion(
-            "Hello! Do you wanna play a game? [yes|no]\n",
-            false,
-            '/yes/'
+            "Hello! Do you wanna play a game? [y]\n",
+            true,
+            '/y/'
         );
 
         if (!$helper->ask($input, $output, $question)) {
@@ -49,7 +52,7 @@ class TestCommand extends Command
         }
 
         while (true) {
-            $question = new Question("What is your name? [only latin letters, please]\n");
+            $question = new Question("What is your name? Only latin letters, please [user]\n", 'user');
 
             $name = $helper->ask($input, $output, $question);
 
@@ -66,8 +69,9 @@ class TestCommand extends Command
         $output->writeln(sprintf('Well, %s, let\'s start the game', $user->getName()));
 
         $question = new ChoiceQuestion(
-            'Choose your destiny',
+            'Choose your destiny [0]',
             $this->testSuiteService->getList()->toArray(),
+            0
         );
 
         $testSuite = $helper->ask($input, $output, $question);
@@ -85,20 +89,63 @@ class TestCommand extends Command
 
         $session = $this->sessionService->create($user, $testSuite);
 
+        $successResults = [];
+        $failedResults = [];
+
         foreach ($testSuite->getTestCases() as $key => $testCase) {
+            $isSuccess = true;
+
+            $answers = $testCase->getAnswers()->toArray();
+            shuffle($answers);
+
             $question = new ChoiceQuestion(
                 sprintf('#%d. %s?', $key + 1, $testCase->getQuestion()),
-                $testCase->getAnswers()->toArray(),
+                $answers,
             );
             $question->setMultiselect(true);
 
-            $answers = $helper->ask($input, $output, $question);
+            $selectedAnswers = $helper->ask($input, $output, $question);
 
-            foreach ($answers as $answer) {
-                if (!$answer instanceof Answer) {
-                    return Command::FAILURE;
+            foreach ($selectedAnswers as $answer) {
+                if ($answer instanceof Answer) {
+                    $isSuccess = $isSuccess && $answer->isRight();
+                    $this->resultService->create($session, $answer);
                 }
-                $this->resultService->create($session, $testCase, $answer);
+            }
+
+            if ($isSuccess) {
+                $successResults[] = [$testCase, $selectedAnswers, $question->getChoices()];
+            } else {
+                $failedResults[] = [$testCase, $selectedAnswers, $question->getChoices()];
+            }
+        }
+
+        $output->writeln(
+            sprintf(
+                'Congratulations, %s! You\'ve completed this game. Your Results:',
+                $user->getName()
+            ),
+        );
+
+        $output->writeln("<============ Right questions ==============>");
+        foreach ($successResults as $successResult) {
+            $testCase = $successResult[0];
+            $selectedAnswers = $successResult[1];
+            $allAnswers = $successResult[2];
+
+            if ($testCase instanceof TestCase) {
+                $this->printResultList($output, $testCase, $selectedAnswers, $allAnswers);
+            }
+        }
+
+        $output->writeln("<============= Wrong questions =============>");
+        foreach ($failedResults as $failedResult) {
+            $testCase = $failedResult[0];
+            $selectedAnswers = $failedResult[1];
+            $allAnswers = $failedResult[2];
+
+            if ($testCase instanceof TestCase) {
+                $this->printResultList($output, $testCase, $selectedAnswers, $allAnswers);
             }
         }
 
@@ -112,5 +159,52 @@ class TestCommand extends Command
         }
 
         return (bool)preg_match('/^[\d\sA-Za-z]*$/', $name);
+    }
+
+    /**
+     * @param array<array<int>> $answerCombinations
+     * @return string
+     */
+    protected function getAnswersAsString(array $answerCombinations): string
+    {
+        $results = [];
+
+        foreach ($answerCombinations as $combination) {
+            $combinationStr = implode(' AND ', $combination);
+
+            if (count($combination) > 1) {
+                $combinationStr = '(' . $combinationStr . ')';
+            }
+
+            $results[] = $combinationStr;
+        }
+
+        return implode(' OR ', $results);
+    }
+
+    /**
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param \App\Entity\TestCase\TestCase $testCase
+     * @param array<Answer> $selectedAnswers
+     * @param array<Answer> $allAnswers
+     * @return void
+     */
+    protected function printResultList(
+        OutputInterface $output,
+        TestCase $testCase,
+        array $selectedAnswers,
+        array $allAnswers,
+    ): void {
+        $output->writeln(
+            sprintf(
+                "%s\nChosen answers: %s\nRightAnswers: %s",
+                $testCase->getQuestion(),
+                implode(
+                    ' AND ',
+                    $this->answerService->getSelectedAnswerKeys($selectedAnswers, $allAnswers),
+                ),
+                $this->getAnswersAsString($this->answerService->getRightAnswerKeys($allAnswers)),
+            ),
+        );
     }
 }

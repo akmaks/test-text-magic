@@ -28,7 +28,7 @@ class TestSuiteRepository extends ServiceEntityRepository implements TestSuiteRe
     }
 
     /**
-     * @return array<int, TestSuite>
+     * @return array<TestSuite>
      */
     public function getList(): array
     {

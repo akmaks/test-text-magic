@@ -3,7 +3,7 @@
 namespace App\Entity\TestSuite;
 
 use App\Entity\Session\Session;
-use App\Entity\TestCase;
+use App\Entity\TestCase\TestCase;
 use App\Repository\TestSuiteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\TestCase;
 
-use App\Entity\Result\Result;
+use App\Entity\Answer\Answer;
 use App\Entity\TestSuite\TestSuite;
 use App\Repository\TestCaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,12 +25,6 @@ class TestCase
     private TestSuite $testSuite;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection<int,Result>
-     */
-    #[ORM\OneToMany(targetEntity: Result::class, mappedBy: 'testCase')]
-    private Collection $results;
-
-    /**
      * @var \Doctrine\Common\Collections\Collection<int,Answer>
      */
     #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'testCase')]
@@ -45,7 +39,6 @@ class TestCase
 
     public function __construct()
     {
-        $this->results = new ArrayCollection();
         $this->answers = new ArrayCollection();
     }
 
@@ -71,14 +64,6 @@ class TestCase
         $this->answers = $answers;
 
         return $this;
-    }
-
-    /**
-     * @return \Doctrine\Common\Collections\Collection<int,Result>
-     */
-    public function getResults(): Collection
-    {
-        return $this->results;
     }
 
     public function getTestSuite(): TestSuite
