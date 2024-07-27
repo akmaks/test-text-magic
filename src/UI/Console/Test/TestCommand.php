@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\UI\Console\Test;
 
 use App\Entity\Answer\Answer;
 use App\Entity\TestCase\TestCase;
@@ -12,6 +12,7 @@ use App\Service\TestSuite\TestSuiteServiceInterface;
 use App\Service\User\UserServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -37,7 +38,7 @@ class TestCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /**
-         * @var \Symfony\Component\Console\Helper\QuestionHelper $helper
+         * @var QuestionHelper $helper
          */
         $helper = $this->getHelper('question');
 
@@ -129,24 +130,12 @@ class TestCommand extends Command
 
         $output->writeln("<============ Right questions ==============>");
         foreach ($successResults as $successResult) {
-            $testCase = $successResult[0];
-            $selectedAnswers = $successResult[1];
-            $allAnswers = $successResult[2];
-
-            if ($testCase instanceof TestCase) {
-                $this->printResultList($output, $testCase, $selectedAnswers, $allAnswers);
-            }
+            $this->printResultList($output, $successResult[0], $successResult[1], $successResult[2]);
         }
 
         $output->writeln("<============= Wrong questions =============>");
         foreach ($failedResults as $failedResult) {
-            $testCase = $failedResult[0];
-            $selectedAnswers = $failedResult[1];
-            $allAnswers = $failedResult[2];
-
-            if ($testCase instanceof TestCase) {
-                $this->printResultList($output, $testCase, $selectedAnswers, $allAnswers);
-            }
+            $this->printResultList($output, $failedResult[0], $failedResult[1], $failedResult[2]);
         }
 
         return Command::SUCCESS;
