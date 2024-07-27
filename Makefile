@@ -9,7 +9,7 @@ setup: ## Setup app
 	yes | docker compose rm -v
 	docker compose up -d --build
 
-run: ## Run test
+run: ## Run test command
 	$(DOCKER_EXEC) bin/console app:test
 
 phpstan: ## Code errors and bugs analyser
